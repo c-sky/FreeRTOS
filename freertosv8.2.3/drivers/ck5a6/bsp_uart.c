@@ -133,10 +133,10 @@ uint32_t CKUartWrite(	uint8_t*pucData,
 }
 
 extern void write_console(char c);
-xSemaphoreHandle s_xsem_serial = NULL;
+xSemaphoreHandle g_xsem_serial = NULL;
 
-char shellcmd[SHELLNAME_LEN];
-uint8_t shellidx = 0;
+char g_shellcmd[SHELLNAME_LEN];
+uint8_t g_shellidx = 0;
 
 void CKUart0handler(void)
 {
@@ -151,7 +151,7 @@ void CKUart0handler(void)
 
 	if ( UART[UART_LSR] & LSR_THR_EMPTY)
 	{
-		if ( s_xsem_serial == NULL)
+		if ( g_xsem_serial == NULL)
 		{
 			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 		}
@@ -159,14 +159,14 @@ void CKUart0handler(void)
 		tmp = UART[UART_RBR];
 		if ((tmp == '\n') || (tmp == '\r'))
 		{
-			xSemaphoreGiveFromISR(s_xsem_serial, &xHigherPriorityTaskWoken );
+			xSemaphoreGiveFromISR(g_xsem_serial, &xHigherPriorityTaskWoken );
 		}
 		else if ((tmp == 0x7F) || (tmp == 0x8))
 		{
-			if (shellidx > 0)
+			if (g_shellidx > 0)
 			{
-				shellidx --;
-				shellcmd[shellidx] = '\0';
+				g_shellidx --;
+				g_shellcmd[g_shellidx] = '\0';
 				write_console('\b');
 				write_console(' ');
 				write_console('\b');
@@ -174,10 +174,10 @@ void CKUart0handler(void)
 		}
 		else
 		{
-			if (shellidx < SHELLNAME_LEN)
+			if (g_shellidx < SHELLNAME_LEN)
 			{
-				shellcmd[shellidx] = (tmp);
-				shellidx++;
+				g_shellcmd[g_shellidx] = (tmp);
+				g_shellidx++;
 			}
 			write_console(tmp);
 		}

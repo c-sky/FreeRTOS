@@ -6,20 +6,20 @@
 #include "bsp_uart.h"
 #include "string.h"
 
-#define HELLO_INFO()		printk("\r\n\r\n");\
+#define HELLO_INFO()	printk("\r\n\r\n");\
 						printk("*******************************************\r\n");\
 						printk("Welcome to C-sky CK610 Shell under FreeRTOS\r\n");\
 						printk("*******************************************\r\n\r\n")
 						
 #define BYE_INFO()		printk("\r\nBye Bye .. \r\n")
-#define CSKY_H()			printk("Csky $ ")
+#define CSKY_H()		printk("Csky $ ")
 
-extern xSemaphoreHandle s_xsem_serial;
-extern char shellcmd[SHELLNAME_LEN];
-extern uint8_t shellidx;
+extern xSemaphoreHandle g_xsem_serial;
+extern char g_shellcmd[SHELLNAME_LEN];
+extern uint8_t g_shellidx;
 
-enum SHELLSTATUS {SOPEN, SRUN, SCLOSE};	
-enum SHELLSTATUS ssts = SOPEN;
+static enum SHELLSTATUS {SOPEN, SRUN, SCLOSE};	
+static enum SHELLSTATUS ssts = SOPEN;
 
 
 struct cmdreg
@@ -44,7 +44,7 @@ static void dbg_handler(char *buf)
 	sprintf(buf, "\r\n%s\r\n", "debug handler");
 }
 
-struct cmdreg shellcmdreg[] = 
+static const struct cmdreg s_shellcmdreg[] = 
 {
 	{
 		.name = "os",
@@ -64,7 +64,7 @@ static char *shellcmdlaunch (char *cmd)
 	char *shellrsp = cmd;
 	struct cmdreg *shellcmdptr = NULL;
 
-	for (shellcmdptr = shellcmdreg; shellcmdptr->cmdhandler != NULL; shellcmdptr ++)
+	for (shellcmdptr = s_shellcmdreg; shellcmdptr->cmdhandler != NULL; shellcmdptr ++)
 	{
 		if (!strcmp(shellcmdptr->name, shellrsp))
 		{
@@ -89,17 +89,17 @@ void ShellTask(void *pvParameters)
 {
 	portBASE_TYPE xsem_take;
 
-	s_xsem_serial = xSemaphoreCreateBinary();
-	xSemaphoreTake(s_xsem_serial, 1);
+	g_xsem_serial = xSemaphoreCreateBinary();
+	xSemaphoreTake(g_xsem_serial, 1);
 	
 	HELLO_INFO();
 	CSKY_H();
 	ssts = SRUN;
-	memset (shellcmd, 0, SHELLNAME_LEN);
+	memset(g_shellcmd, 0, SHELLNAME_LEN);
 	
 	while(1)
 	{
-		xsem_take = xSemaphoreTake(s_xsem_serial, 1000 * 60 * 5 / portTICK_RATE_MS);
+		xsem_take = xSemaphoreTake(g_xsem_serial, 1000 * 60 * 5 / portTICK_RATE_MS);
 		if (xsem_take == pdTRUE)
 		{
 			switch (ssts)
@@ -110,19 +110,19 @@ void ShellTask(void *pvParameters)
 					ssts = SRUN;
 					break;
 				case SRUN:
-					if (!strcmp("quit", shellcmd) || !strcmp("exit", shellcmd))
+					if (!strcmp("quit", g_shellcmd) || !strcmp("exit", g_shellcmd))
 					{
 						ssts = SOPEN;
 						BYE_INFO();
-						memset (shellcmd, 0, SHELLNAME_LEN);
-						shellidx = 0;
+						memset (g_shellcmd, 0, SHELLNAME_LEN);
+						g_shellidx = 0;
 					}
 					else
 					{
-						shellcmdlaunch(shellcmd);
+						shellcmdlaunch(g_shellcmd);
 						CSKY_H();
-						memset (shellcmd, 0, SHELLNAME_LEN);
-						shellidx = 0;
+						memset (g_shellcmd, 0, SHELLNAME_LEN);
+						g_shellidx = 0;
 					}
 					break;
 				default:
