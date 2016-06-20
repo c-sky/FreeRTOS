@@ -1,9 +1,9 @@
-BUILDDIR= ../../../build
+BUILDDIR= ../../build
 SRC= $(wildcard *.c)
 OBJ= $(SRC:.c=.o)
-TAR = driver.a
+TAR = bsp.a
 INC_DIR	= ../../include
-INC1_DIR = ../../FreeRTOS
+INC1_DIR = ../../freertosv8.2.3/FreeRTOS
 
 CFLAGS += -I$(INC_DIR) \
 			-I$(INC_DIR)/$(SOC) \
@@ -15,7 +15,7 @@ CFLAGS += -I$(INC_DIR) \
 all: $(TAR)
 
 
-%.o: %.c 
+%.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
 $(TAR): $(OBJ)
@@ -23,9 +23,9 @@ $(TAR): $(OBJ)
 #	$(RM) -rf $(OBJ)
 	mv $(OBJ) $(BUILDDIR)
 
-	
+
 clean:
-	$(RM) -rf $(BUILDDIR)/*.o 
+	$(RM) -rf $(BUILDDIR)/*.o
 	$(RM) -rf $(BUILDDIR)/*.a
 	$(RM) -rf $(BUILDDIR)/*.elf
 

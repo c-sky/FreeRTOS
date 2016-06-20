@@ -11,21 +11,20 @@ CFLAGS += -I$(INC_DIR) \
 			-I$(INC_DIR)/lib \
 			-I$(INC1_DIR)/Source/include \
 			-I$(INC1_DIR)/Source/portable/GCC/CK610
-			
 
 all: $(TAR)
 
 
-%.o: %.c 
+%.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
 $(TAR): $(OBJ)
 	$(AR) r $(BUILDDIR)/$(TAR) $(OBJ)
 #	$(RM) -rf $(OBJ)
 	mv $(OBJ) $(BUILDDIR)
-	
+
 clean:
-	$(RM) -rf $(BUILDDIR)/*.o 
+	$(RM) -rf $(BUILDDIR)/*.o
 	$(RM) -rf $(BUILDDIR)/*.a
 	$(RM) -rf $(BUILDDIR)/*.elf
 

@@ -1,16 +1,14 @@
 BUILDDIR= ../../../build
 SRC= $(wildcard *.c)
 SRCPORTC= ./portable/GCC/CK610/port.c
-SRCPORTASM= ./portable/GCC/CK610/portasmos.S
-SRCPORTASM1= ./portable/GCC/CK610/portasm.s
+#SRCASM= ./portable/GCC/CK610/portasm.S
 SRCMEM= ./portable/MemMang/heap_4.c
 OBJ= $(SRC:.c=.o)
 OBJ+=$(SRCPORTC:port.c=port.o)
-OBJ+=$(SRCPORTASM:portasmos.S=portasmos.o)
-OBJ+=$(SRCPORTASM1:portasm.s=portasm.o)
+#OBJ+=$(SRCASM:portasm.S=portasm.o)
 OBJ+=$(SRCMEM:heap_4.c=heap_4.o)
 TAR = freertos.a
-INC_DIR	= ../../include
+INC_DIR	= ../../../include
 INC1_DIR = ../../FreeRTOS
 
 CFLAGS += -I$(INC_DIR) \

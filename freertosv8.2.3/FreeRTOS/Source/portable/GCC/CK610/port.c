@@ -75,123 +75,131 @@
 
 /* Used to keep track of the number of nested calls to taskENTER_CRITICAL().  This
 will be set to 0 prior to the first task being started. */
-static portLONG ulCriticalNesting = 0x9999UL;
+portLONG ulCriticalNesting = 0x9999UL;
 
-/*-----------------------------------------------------------*/
 
 StackType_t *pxPortInitialiseStack( StackType_t * pxTopOfStack, TaskFunction_t pxCode, void *pvParameters )
 {
-	StackType_t *stk  = NULL;
+    StackType_t *stk  = NULL;
 
-	stk = pxTopOfStack;
-	
-	*--stk = (portLONG)(0X00000000);         /* R15 (Link register)                          */
-	*--stk = (portLONG)(0x00000000);          /* R14 (Non-volatile)                           */
-	*--stk = (portLONG)(0x00000000);          /* R13 (Non-volatile)                           */
-	*--stk = (portLONG)(0x00000000);          /* R12 (Non-volatile)                           */
-	*--stk = (portLONG)(0x00000000);          /* R11 (Non-volatile)                           */
-	*--stk = (portLONG)(0x00000000);          /* R10 (Non-volatile)                           */
-	*--stk = (portLONG)(0x00000000);          /* R9 (Non-volatile)                            */
-	*--stk = (portLONG)(0x00000000);          /* R8 (Non-volatile)                            */
-	*--stk = (portLONG)(0x00000000);          /* R7 (Non-volatile)                            */
-	*--stk = (portLONG)(0x00000000);          /* R6 (Non-volatile)                            */
-	*--stk = (portLONG)(0x00000000);          /* R5 (Non-volatile)                            */
-	*--stk = (portLONG)(0x00000000);          /* R4 (Non-volatile)                            */
-	*--stk = (portLONG)(0x00000000);          /* R3 (Volatile 2nd argument)                   */
-	*--stk = (portLONG)(pvParameters);        /* R2 (Volatile 1st argument)                   */
-	*--stk = (portLONG)(0x00000000);          /* R1 (Volatile data)                           */
-	*--stk = (portLONG)(0x80000150);          /* PSR (Supervisor mode, exceptions enabled)    */
-	*--stk = (portLONG)(pxCode);        	      /* PC (Program counter)    */
+    stk = pxTopOfStack;
 
-    	return stk;
+    *--stk = (portLONG)(0X00000000);         /* R15 (Link register)                          */
+    *--stk = (portLONG)(0x00000000);          /* R14 (Non-volatile)                           */
+    *--stk = (portLONG)(0x00000000);          /* R13 (Non-volatile)                           */
+    *--stk = (portLONG)(0x00000000);          /* R12 (Non-volatile)                           */
+    *--stk = (portLONG)(0x00000000);          /* R11 (Non-volatile)                           */
+    *--stk = (portLONG)(0x00000000);          /* R10 (Non-volatile)                           */
+    *--stk = (portLONG)(0x00000000);          /* R9 (Non-volatile)                            */
+    *--stk = (portLONG)(0x00000000);          /* R8 (Non-volatile)                            */
+    *--stk = (portLONG)(0x00000000);          /* R7 (Non-volatile)                            */
+    *--stk = (portLONG)(0x00000000);          /* R6 (Non-volatile)                            */
+    *--stk = (portLONG)(0x00000000);          /* R5 (Non-volatile)                            */
+    *--stk = (portLONG)(0x00000000);          /* R4 (Non-volatile)                            */
+    *--stk = (portLONG)(0x00000000);          /* R3 (Volatile 2nd argument)                   */
+    *--stk = (portLONG)(pvParameters);        /* R2 (Volatile 1st argument)                   */
+    *--stk = (portLONG)(0x00000000);          /* R1 (Volatile data)                           */
+    *--stk = (portLONG)(0x80000140);          /* PSR (Supervisor mode, exceptions enabled)    */
+    *--stk = (portLONG)(pxCode);              /* PC (Program counter)    */
+
+    return stk;
 }
-/*-----------------------------------------------------------*/
+
+__attribute__((naked)) static void vPortStartTask(void)
+{
+    __asm__ __volatile__ (
+    "lrw    r4, pxCurrentTCB    \n"
+    "ld.w   r4, (r4)    \n"                 // the current task stack pointer is the first member
+    "ld.w   sp, (r4)    \n"
+
+    "ld.w   r1, (sp,0)  \n"                 // Get the PC for the task
+    "mtcr   r1, EPC     \n"
+
+    "ld.w   r1, (sp,4)  \n"                 // Get the PSR for the task
+    "mtcr   r1, EPSR    \n"
+
+    "addi   sp, 8       \n"                 // Increment SP past the PC and PSR
+
+    "ldm    r1-r15,(sp) \n"                 // Load R0-R13 from the stack
+    "addi   sp, 32      \n"                 // Increment SP past the registers
+    "addi   sp, 28      \n"                 // Increment SP past the registers
+    "rte    \n"
+    );
+
+}
+
 
 BaseType_t xPortStartScheduler( void )
 {
-	ulCriticalNesting = 0UL;
-	
-	portENABLE_INTERRUPTS();
-	
-	CKStartTask();
-	
-	return pdFALSE;
+    ulCriticalNesting = 0UL;
+
+    vPortStartTask();
+
+    return pdFALSE;
 }
-/*-----------------------------------------------------------*/
+
 
 void vPortEndScheduler( void )
 {
-	/* Not implemented as there is nothing to return to. */
+    /* Not implemented as there is nothing to return to. */
 }
-/*-----------------------------------------------------------*/
 
+portLONG pendsvflag = 0;
 void vPortEnterCritical( void )
 {
-	portDISABLE_INTERRUPTS();
-	ulCriticalNesting++;
+    ulCriticalNesting ++;
+    portDISABLE_INTERRUPTS();
 }
-/*-----------------------------------------------------------*/
 
 void vPortExitCritical( void )
 {
-	ulCriticalNesting--;
-	if( ulCriticalNesting == 0 )
-	{
-		portENABLE_INTERRUPTS();
-	}
-}
-static portLONG cpu_psr = 0x80000100;
-
-portLONG ulPortSetIPL( portLONG x)
-{
-	if (x)
-	{
-		cpu_psr = CPU_PSR_SAVE();
-	}
-	else
-	{
-		CPU_PSR_STORE(cpu_psr); 
-	}
-	
-	return cpu_psr;
+    ulCriticalNesting --;
+    if (ulCriticalNesting == 0)
+    {
+        portENABLE_INTERRUPTS();
+    }
+    if (pendsvflag)
+    {
+        pendsvflag = 0;
+        portYIELD();
+    }
 }
 
 void xPortSysTickHandler( void )
 {
-	portLONG ulDummy;
-	
-	ulDummy = portSET_INTERRUPT_MASK_FROM_ISR();
-	{
-		if (xTaskIncrementTick() != pdFALSE)
-		{
-			portYIELD_FROM_ISR(pdTRUE);
-		}
-	}
-	portCLEAR_INTERRUPT_MASK_FROM_ISR( ulDummy );
+    portLONG ulDummy;
+
+    ulDummy = portSET_INTERRUPT_MASK_FROM_ISR();
+    {
+        if (xTaskIncrementTick() != pdFALSE)
+        {
+            portYIELD_FROM_ISR(pdTRUE);
+        }
+    }
+    portCLEAR_INTERRUPT_MASK_FROM_ISR( ulDummy );
 }
 
 void vPortYieldHandler( void )
 {
-	uint32_t ulSavedInterruptMask;
+    uint32_t ulSavedInterruptMask;
 
-	ulSavedInterruptMask = portSET_INTERRUPT_MASK_FROM_ISR();
-	
-	vTaskSwitchContext();
-	
-	portCLEAR_INTERRUPT_MASK_FROM_ISR( ulSavedInterruptMask );
+    ulSavedInterruptMask = portSET_INTERRUPT_MASK_FROM_ISR();
+
+    vTaskSwitchContext();
+
+    portCLEAR_INTERRUPT_MASK_FROM_ISR( ulSavedInterruptMask );
 }
 
-
-__attribute__((weak)) void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName ) 
+__attribute__((weak)) void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName )
 {
-	printk("Fail vApplicationStackOverflowHook\n");
-	for( ;; );
+    printk("Fail vApplicationStackOverflowHook\n");
+    for( ;; );
 }
 
-__attribute__((weak)) void vApplicationMallocFailedHook( void ) 
+__attribute__((weak)) void vApplicationMallocFailedHook( void )
 {
-	printk("Fail vApplicationMallocFailedHook\n");
-	for( ;; );
+    printk("Fail vApplicationMallocFailedHook\n");
+    for( ;; );
 }
 
 

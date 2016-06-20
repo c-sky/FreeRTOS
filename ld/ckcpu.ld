@@ -6,7 +6,7 @@ SEARCH_DIR(.)
 __DYNAMIC  =  0;
 
 /*
- * Setup the memory map of the evaluation board 
+ * Setup the memory map of the evaluation board
  * stack grows down from high memory.
  *
  * The memory map look like this:
@@ -47,7 +47,7 @@ PROVIDE (__stack = 0x08800000 - 4);
 /*
  * Initalize some symbols to be zero so we can reference them in the
  * crt0 without core dumping. These functions are all optional, but
- * we do this so we can have our crt0 always use them if they exist. 
+ * we do this so we can have our crt0 always use them if they exist.
  * This is so BSPs work better when using the crt0 installed with gcc.
  * We have to initalize them twice, so we cover a.out (which prepends
  * an underscore) and coff object file formats.
@@ -98,7 +98,7 @@ SECTIONS
 
   } > ram
 
-  .data BLOCK (0x4) : 
+  .data BLOCK (0x4) :
   {
   	_data = .;
     *(.shdata)
@@ -127,8 +127,8 @@ SECTIONS
     *(.stab)
   }
 
-  .stabstr 0 (NOLOAD) : 
-  {	
-    *(.stabstr)	
+  .stabstr 0 (NOLOAD) :
+  {
+    *(.stabstr)
   }
 }

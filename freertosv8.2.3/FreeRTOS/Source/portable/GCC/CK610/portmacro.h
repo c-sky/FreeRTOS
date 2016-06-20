@@ -87,13 +87,13 @@ extern "C" {
  */
 
 /* Type definitions. */
-#define portCHAR			char
-#define portFLOAT		float
-#define portDOUBLE		double
-#define portLONG			long
-#define portSHORT		short
-#define portSTACK_TYPE	uint32_t
-#define portBASE_TYPE	long
+#define portCHAR        char
+#define portFLOAT       float
+#define portDOUBLE      double
+#define portLONG        long
+#define portSHORT       short
+#define portSTACK_TYPE  uint32_t
+#define portBASE_TYPE   long
 
 
 
@@ -103,43 +103,93 @@ typedef unsigned long UBaseType_t;
 typedef void (*portvectorfunc)(void);
 
 #if( configUSE_16_BIT_TICKS == 1 )
-	typedef uint16_t  TickType_t;
-	#define portMAX_DELAY ( TickType_t ) 0xffff
+    typedef uint16_t  TickType_t;
+    #define portMAX_DELAY ( TickType_t ) 0xffff
 #else
-	typedef uint32_t  TickType_t;
-	#define portMAX_DELAY ( TickType_t ) 0xffffffffUL
+    typedef uint32_t  TickType_t;
+    #define portMAX_DELAY ( TickType_t ) 0xffffffffUL
 #endif
-/*-----------------------------------------------------------*/
+
 
 /* Hardware specifics. */
-#define portBYTE_ALIGNMENT			4
-#define portSTACK_GROWTH			-1
-#define portTICK_PERIOD_MS			( ( TickType_t ) 1000 / configTICK_RATE_HZ )
-/*-----------------------------------------------------------*/
-portLONG ulPortSetIPL( portLONG );
-#define portDISABLE_INTERRUPTS()		ulPortSetIPL( 1 )
-#define portENABLE_INTERRUPTS()		ulPortSetIPL( 0 )
+#define portBYTE_ALIGNMENT          4
+#define portSTACK_GROWTH            -1
+#define portTICK_PERIOD_MS          ( ( TickType_t ) 1000 / configTICK_RATE_HZ )
 
-extern portLONG CPU_PSR_SAVE (void);
-extern void CPU_PSR_STORE (portLONG psr);
-extern void CKStartTask (void);
+static inline void vPortEnableInterrupt( void )
+{
+    __asm__ __volatile__(
+        "psrset ie\n"
+        );
+}
+
+static inline void vPortDisableInterrupt( void )
+{
+    __asm__ __volatile__(
+        "psrclr ie\n"
+        );
+}
+
+static inline portLONG GetCurrentPSR (void)
+{
+    portLONG flags;
+
+     __asm__ __volatile__(
+        "mfcr   %0, psr \n"
+        :"=r"(flags)
+        :
+        :
+        );
+
+    return flags;
+}
+
+static inline portLONG SaveLocalPSR (void)
+{
+    portLONG flags;
+
+     __asm__ __volatile__(
+        "mfcr   %0, psr \n"
+        "psrclr ie\n"
+        :"=r"(flags)
+        :
+        :
+        );
+
+    return flags;
+}
+
+static inline void RestoreLocalPSR (portLONG newMask)
+{
+    __asm__ __volatile__(
+    "mtcr   %0, psr \n"
+    :
+    :"r" (newMask)
+    :"memory"
+    );
+}
 
 extern void vPortEnterCritical( void );
 extern void vPortExitCritical( void );
-#define portENTER_CRITICAL()	vPortEnterCritical()
-#define portEXIT_CRITICAL()	vPortExitCritical()
 
+#define portDISABLE_INTERRUPTS()        vPortDisableInterrupt()
+#define portENABLE_INTERRUPTS()         vPortEnableInterrupt()
+#define portENTER_CRITICAL()            vPortEnterCritical()
+#define portEXIT_CRITICAL()             vPortExitCritical()
 
-#define portSET_INTERRUPT_MASK_FROM_ISR()	portDISABLE_INTERRUPTS()
-#define portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedStatusRegister ) portENABLE_INTERRUPTS()
-
-/*-----------------------------------------------------------*/
-
-/* Task utilities. */
-#define portNOP()					asm( "nop" )
-
-/* Note this will overwrite all other bits in the force register, it is done this way for speed. */
-#define portYIELD()				do{asm( "trap 0" );portNOP();portNOP();}while(0)
+extern portLONG ulCriticalNesting ;
+extern portLONG pendsvflag ;
+#define portNOP()                   asm("nop")
+#define portYIELD()                 if (ulCriticalNesting == 0) \
+                                    {   \
+                                        asm("psrset ee, ie");   \
+                                        asm("trap 0");  \
+                                    }   \
+                                    else \
+                                    {   \
+                                        pendsvflag = 1; \
+                                    }   \
+                                    portNOP();portNOP()
 
 /*-----------------------------------------------------------*/
 
@@ -147,18 +197,20 @@ extern void vPortExitCritical( void );
 #define portTASK_FUNCTION_PROTO( vFunction, pvParameters ) void vFunction( void *pvParameters ) __attribute__((noreturn))
 #define portTASK_FUNCTION( vFunction, pvParameters ) void vFunction( void *pvParameters )
 /*-----------------------------------------------------------*/
-extern void CKEnableIntFromIsr(void);
-	
-#define portEND_SWITCHING_ISR( xSwitchRequired )		if( xSwitchRequired != pdFALSE )	\
-													{						\
-														CKEnableIntFromIsr();	\
-														portYIELD();				\
-													}
-
-#define portYIELD_FROM_ISR(a)		portEND_SWITCHING_ISR(a)
 
 
-#define configASSERT(a)	do {if ((a)==0){printk("Assert : %s %d\r\n", __FILE__, __LINE__);while(1);}}while(0)
+
+#define portEND_SWITCHING_ISR( xSwitchRequired )    do {    \
+                                                            if( xSwitchRequired != pdFALSE )    \
+                                                            {   \
+                                                                portYIELD();    \
+                                                            }   \
+                                                    }while(0)
+
+#define portYIELD_FROM_ISR( a )     portEND_SWITCHING_ISR( a )
+
+
+#define configASSERT( a )   do {if ((a)==0){printk("Assert : %s %d\r\n", __FILE__, __LINE__);while(1);}}while(0)
 
 
 #ifdef __cplusplus

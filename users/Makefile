@@ -3,7 +3,7 @@ SRC=  $(CASE_NAME).c main.c
 OBJ= $(SRC:.c=.o)
 TAR= user.a
 
-INC_DIR	= ../freertosv8.2.3/include
+INC_DIR	= ../include
 INC1_DIR = ../freertosv8.2.3/FreeRTOS
 
 CFLAGS += -I$(INC_DIR) \
