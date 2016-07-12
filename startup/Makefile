@@ -11,7 +11,7 @@ CFLAGS += 	-I$(INC_DIR) \
 
 all: $(TAR)
 
-%.o: %.s
+%.o: %.S
 	$(CC) $(CFLAGS) $< -o $@
 
 $(TAR): $(OBJ)
