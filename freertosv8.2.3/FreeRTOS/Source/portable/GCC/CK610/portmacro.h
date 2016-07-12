@@ -172,10 +172,13 @@ static inline void RestoreLocalPSR (portLONG newMask)
 extern void vPortEnterCritical( void );
 extern void vPortExitCritical( void );
 
-#define portDISABLE_INTERRUPTS()        vPortDisableInterrupt()
-#define portENABLE_INTERRUPTS()         vPortEnableInterrupt()
-#define portENTER_CRITICAL()            vPortEnterCritical()
-#define portEXIT_CRITICAL()             vPortExitCritical()
+#define portDISABLE_INTERRUPTS()            vPortDisableInterrupt()
+#define portENABLE_INTERRUPTS()             vPortEnableInterrupt()
+#define portENTER_CRITICAL()                vPortEnterCritical()
+#define portEXIT_CRITICAL()                 vPortExitCritical()
+#define portSET_INTERRUPT_MASK_FROM_ISR()     SaveLocalPSR()
+#define portCLEAR_INTERRUPT_MASK_FROM_ISR(a)   RestoreLocalPSR(a)
+
 
 extern portLONG ulCriticalNesting ;
 extern portLONG pendsvflag ;
@@ -190,6 +193,7 @@ extern portLONG pendsvflag ;
                                         pendsvflag = 1; \
                                     }   \
                                     portNOP();portNOP()
+
 
 /*-----------------------------------------------------------*/
 

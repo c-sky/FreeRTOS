@@ -157,11 +157,12 @@ void vPortExitCritical( void )
     if (ulCriticalNesting == 0)
     {
         portENABLE_INTERRUPTS();
-    }
-    if (pendsvflag)
-    {
-        pendsvflag = 0;
-        portYIELD();
+
+        if (pendsvflag)
+        {
+            pendsvflag = 0;
+            portYIELD();
+        }
     }
 }
 

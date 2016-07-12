@@ -16,10 +16,7 @@ CFLAGS += -I$(INC_DIR) \
 
 all: $(TAR)
 
-main.o: main.c 
-	$(CC) $(CFLAGS) $< -o $@
-
-$(CASE_NAME).o: $(CASE_NAME).c
+%.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
 $(TAR):$(OBJ)
@@ -27,7 +24,7 @@ $(TAR):$(OBJ)
 	mv $(OBJ) $(BUILDDIR)
 
 clean:
-	$(RM) -rf *.o 
+	$(RM) -rf *.o
 	$(RM) -rf *.a
 	$(RM) -rf *.elf
 

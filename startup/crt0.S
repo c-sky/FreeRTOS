@@ -27,6 +27,9 @@
 //*
 //*
 //*****************************************************************************/
+
+#include "ckcache.h"
+
 .file     "crt0.s"
 .text
 .import   _crt0init
@@ -180,6 +183,9 @@ _START:
     bt      2b          /* Repeat for all bss */
 
 __goto_c:
+
+    csky_cache_init
+
     jbsr    main
 
     // NOTE: Breakpoint if we return from main()

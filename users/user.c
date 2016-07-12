@@ -155,6 +155,7 @@ void dumpTask(void *pvParameters)
             flag = 0;
             vTaskDelete(NULL);
         }
+        printk("dump task \r\n");
     }
 }
 
@@ -163,6 +164,7 @@ void goTask(void *pvParameters)
     while(1)
     {
         vTaskDelay(100);
+        printk("go task \r\n");
     }
 }
 
@@ -170,7 +172,8 @@ void backTask(void *pvParameters)
 {
     while(1)
     {
-        vTaskDelay(100);
+        vTaskDelay(50/portTICK_PERIOD_MS);
+        printk("back task \r\n");
     }
 }
 

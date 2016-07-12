@@ -16,6 +16,7 @@ TARGET_LIB_OS_ONLY = $(BUILDDIR)/startup.a \
 			 $(BUILDDIR)/freertos.a \
 			 $(BUILDDIR)/bsp.a \
 			 $(BUILDDIR)/lib.a \
+			 $(BUILDDIR)/$(CASE_NAME).a
 
 
 LINKFILE = ckcpu.ld
