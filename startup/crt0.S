@@ -29,7 +29,7 @@
 //*****************************************************************************/
 
 #include "ckcache.h"
-
+#include "ckmgu.h"
 .file     "crt0.s"
 .text
 .import   _crt0init
@@ -169,6 +169,44 @@ _START:
     lrw     r7, vbr_base
     mtcr    r7, vbr
 
+    /*** Initial CKCPU MGU & Cache ***/
+
+    /*
+     * Step 1: Disable MGU & Cache.
+     */
+    csky_mgu_disable
+
+    /*
+     * Initial CKCPU MGU & Cache
+     * Step 2: set MGU block
+     */
+
+    /* The first block */
+    /* csky_mgu_region regionNum baseAddr regionSize */
+    csky_mgu_region 0 0 REGION_4G MGU_REGION_RW MGU_REGION_UNCACHE
+
+    /* The second block */
+    /* csky_mgu_region regionNum baseAddr regionSize */
+     csky_mgu_region 1 0x08000000 REGION_256K MGU_REGION_RW MGU_REGION_CACHE
+
+
+    /*
+     * Step 3: enable MGU
+     */
+    csky_mgu_enable
+
+    /* special functional */
+    mfcr    a5, cr18
+    bseti   a5, 4      // WB: write back
+    bseti   a5, 5      // RS: return stack
+    bseti   a5, 6      // Z:  jumping predict
+    mtcr    a5, cr18
+
+    /*
+     * Step 5: enable instruction & data cache
+     */
+    csky_cache_init
+
     lrw     r7, __bss_start /* Get start of bss from linking script file */
     lrw     r6, __end   /* Get end of bss from linking script file */
     subu    r6, r7      /* Calculate size of bss */
@@ -183,8 +221,6 @@ _START:
     bt      2b          /* Repeat for all bss */
 
 __goto_c:
-
-    csky_cache_init
 
     jbsr    main
 
