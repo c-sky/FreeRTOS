@@ -197,7 +197,7 @@ _START:
 
     /* special functional */
     mfcr    a5, cr18
-    bseti   a5, 4      // WB: write back
+    bclri   a5, 4      // WB: write back disable
     bseti   a5, 5      // RS: return stack
     bseti   a5, 6      // Z:  jumping predict
     mtcr    a5, cr18

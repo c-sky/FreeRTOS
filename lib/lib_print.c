@@ -214,8 +214,8 @@ int ck_vsnprintf(char *buf, ck_size_t size, const char *fmt, ck_va_list args)
                     while (--field_width > 0)
                     {
                         if (str <= end)
-                        str = ' ';
-                        str;
+                        *str = ' ';
+                        ++str;
                     }
                 }
                 c = (unsigned char) ck_va_arg(args, int);

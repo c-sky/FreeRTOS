@@ -7,8 +7,6 @@ extern void ShellTask(void *pvParameters);
 extern void dumpTask(void *pvParameters);
 extern void goTask(void *pvParameters);
 extern void backTask(void *pvParameters);
-extern void vStartBlockingQueueTasks( UBaseType_t uxPriority );
-extern BaseType_t xAreBlockingQueuesStillRunning( void );
 
 static void preSetupHardware(void)
 {

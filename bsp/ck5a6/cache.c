@@ -50,6 +50,22 @@
 /****************************************************************************
  * Private functions
  ****************************************************************************/
+static inline void irqrestore(unsigned long flags)
+{
+    asm volatile(
+        "mtcr    %0, psr  \n"
+        : :"r" (flags) :"memory" );
+}
+
+static inline unsigned long irqsave(void)
+{
+    unsigned long flags;
+    asm volatile(
+        "mfcr   %0, psr  \n"
+        "psrclr ie      \n"
+        :"=r"(flags) : :"memory" );
+    return flags;
+}
 
 /****************************************************************************
  * Name: __flush_cache_range
