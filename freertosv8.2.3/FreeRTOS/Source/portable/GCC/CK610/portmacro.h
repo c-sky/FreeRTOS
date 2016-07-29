@@ -172,20 +172,20 @@ static inline void RestoreLocalPSR (portLONG newMask)
 extern void vPortEnterCritical( void );
 extern void vPortExitCritical( void );
 
-#define portDISABLE_INTERRUPTS()            vPortDisableInterrupt()
-#define portENABLE_INTERRUPTS()             vPortEnableInterrupt()
-#define portENTER_CRITICAL()                vPortEnterCritical()
-#define portEXIT_CRITICAL()                 vPortExitCritical()
-#define portSET_INTERRUPT_MASK_FROM_ISR()     SaveLocalPSR()
-#define portCLEAR_INTERRUPT_MASK_FROM_ISR(a)   RestoreLocalPSR(a)
+#define portDISABLE_INTERRUPTS()            	vPortDisableInterrupt()
+#define portENABLE_INTERRUPTS()             	vPortEnableInterrupt()
+#define portENTER_CRITICAL()                	vPortEnterCritical()
+#define portEXIT_CRITICAL()                 	vPortExitCritical()
+#define portSET_INTERRUPT_MASK_FROM_ISR()     	SaveLocalPSR()
+#define portCLEAR_INTERRUPT_MASK_FROM_ISR(a)   	RestoreLocalPSR(a)
 
 
-extern portLONG ulCriticalNesting ;
-extern portLONG pendsvflag ;
+extern portLONG ulCriticalNesting;
+extern portLONG pendsvflag;
 #define portNOP()                   asm("nop")
 #define portYIELD()                 if (ulCriticalNesting == 0) \
-                                    {   \
-                                        asm("psrset ee, ie");   \
+                                    {	\
+										asm("psrset ee, ie");   \
                                         asm("trap 0");  \
                                     }   \
                                     else \
@@ -204,8 +204,8 @@ extern portLONG pendsvflag ;
 
 
 
-#define portEND_SWITCHING_ISR( xSwitchRequired )    do {    \
-                                                            if( xSwitchRequired != pdFALSE )    \
+#define portEND_SWITCHING_ISR( xSwitchRequired )    do {	\
+															if( xSwitchRequired != pdFALSE )    \
                                                             {   \
                                                                 portYIELD();    \
                                                             }   \

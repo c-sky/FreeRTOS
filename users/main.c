@@ -8,11 +8,28 @@ extern void dumpTask(void *pvParameters);
 extern void goTask(void *pvParameters);
 extern void backTask(void *pvParameters);
 
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Function
+ * 			void CKEnableInterrupt(uint32_t irq)
+ * Description
+ * 			Enable interrupt
+ * Parameter
+ * 			irq				irq number
+ * Return
+ * 			None
+ ****************************************************************************/
 static void preSetupHardware(void)
 {
     BSP_Init();
 }
 
+/****************************************************************************
+ * void main (void)
+ ****************************************************************************/
 int main (void)
 {
     preSetupHardware();

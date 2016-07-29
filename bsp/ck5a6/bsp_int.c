@@ -1,5 +1,20 @@
 #include "bsp.h"
 
+
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Function
+ * 			void CKEnableInterrupt(uint32_t irq)
+ * Description
+ * 			Enable interrupt
+ * Parameter
+ * 			irq				irq number
+ * Return
+ * 			None
+ ****************************************************************************/
 void CKEnableInterrupt(uint32_t irq)
 {
     if (irq >= 32)
@@ -8,6 +23,16 @@ void CKEnableInterrupt(uint32_t irq)
     }
 }
 
+/****************************************************************************
+ * Function
+ * 			void CKIntcInit (void)
+ * Description
+ * 			initialize interrupt controller
+ * Parameter
+ * 			None
+ * Return
+ * 			None
+ ****************************************************************************/
 void CKIntcInit(void)
 {
     BSPINTCREG->icr = 0;

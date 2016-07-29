@@ -6,7 +6,26 @@ static void CKUartTrasmitEmpty(void)
     while ((BSPUARTREG->usr & USR_TFE) == 0);
 }
 
-uint32_t CKUartInit(uint32_t ulBaudRate, uint32_t ulDataBits, uint32_t ulStopBits, uint32_t ulParity)
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Function
+ * 			uint32_t CKUartInit(uint32_t ulBaudRate, uint32_t ulDataBits,
+ * 								uint32_t ulStopBits, uint32_t ulParity)
+ * Description
+ * 			Initialize uart
+ * Parameter
+ * 			ulBaudRate				baudrate 
+ * 			ulDataBits				data bits
+ * 			ulStopBits				stop bits
+ * 			ulParity				odd or even
+ * Return
+ * 			0
+ ****************************************************************************/
+uint32_t CKUartInit(uint32_t ulBaudRate, uint32_t ulDataBits,
+					uint32_t ulStopBits, uint32_t ulParity)
 {
     /* NOTE: Could perform parameter checking here */
     uint32_t uDivisor;
@@ -55,8 +74,22 @@ uint32_t CKUartInit(uint32_t ulBaudRate, uint32_t ulDataBits, uint32_t ulStopBit
     return(0);
 }
 
-
-uint32_t CKUartRead(uint8_t *pucData,uint32_t ulNumBytes, uint32_t *pulBytesRead,uint32_t  ulFlags)
+/****************************************************************************
+ * Function
+ * 			CKUartRead(uint8_t *pucData,uint32_t ulNumBytes,
+ * 						uint32_t *pulBytesRead,uint32_t  ulFlags)
+ * Description
+ * 			uart read
+ * Parameter
+ * 			pucData				data buffer 
+ * 			ulNumBytes			data buffer length
+ * 			pulBytesRead		read buffer
+ * 			ulFlags				flag
+ * Return
+ * 			0
+ ****************************************************************************/
+uint32_t CKUartRead(uint8_t *pucData, uint32_t ulNumBytes,
+					uint32_t *pulBytesRead,uint32_t  ulFlags)
 {
     *pulBytesRead = 0;
 
@@ -85,7 +118,22 @@ uint32_t CKUartRead(uint8_t *pucData,uint32_t ulNumBytes, uint32_t *pulBytesRead
     return(*pulBytesRead);
 }
 
-uint32_t CKUartWrite(uint8_t*pucData, uint32_t ulNumBytes, uint32_t *pulBytesWritten,uint32_t ulFlags)
+/****************************************************************************
+ * Function
+ * 			uint32_t CKUartWrite(uint8_t*pucData, uint32_t ulNumBytes,
+ * 					uint32_t *pulBytesWritten,uint32_t ulFlags)
+ * Description
+ * 			uart read
+ * Parameter
+ * 			pucData				data buffer 
+ * 			ulNumBytes			data buffer length
+ * 			pulBytesRead		write buffer
+ * 			ulFlags				flag
+ * Return
+ * 			0
+ ****************************************************************************/
+uint32_t CKUartWrite(uint8_t*pucData, uint32_t ulNumBytes,
+						uint32_t *pulBytesWritten,uint32_t ulFlags)
 {
        /*For uart write time out number setting*/
 //  unsigned long timeout   =   UART_WRITE_TIMEOUT;
