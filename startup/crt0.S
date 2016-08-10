@@ -142,8 +142,6 @@ ISR_Trap2:
 ISR_Trap3:
     br  ISR_Trap3
 ISR_Vectored:
-    lrw r1, 0x80000100
-    mtcr r1, epsr
     rte
     br  ISR_Vectored
 

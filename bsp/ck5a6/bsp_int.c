@@ -7,13 +7,13 @@
 
 /****************************************************************************
  * Function
- * 			void CKEnableInterrupt(uint32_t irq)
+ *          void CKEnableInterrupt(uint32_t irq)
  * Description
- * 			Enable interrupt
+ *          Enable interrupt
  * Parameter
- * 			irq				irq number
+ *          irq         irq number
  * Return
- * 			None
+ *          None
  ****************************************************************************/
 void CKEnableInterrupt(uint32_t irq)
 {
@@ -25,13 +25,13 @@ void CKEnableInterrupt(uint32_t irq)
 
 /****************************************************************************
  * Function
- * 			void CKIntcInit (void)
+ *          void CKIntcInit (void)
  * Description
- * 			initialize interrupt controller
+ *          initialize interrupt controller
  * Parameter
- * 			None
+ *          None
  * Return
- * 			None
+ *          None
  ****************************************************************************/
 void CKIntcInit(void)
 {

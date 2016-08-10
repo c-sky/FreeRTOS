@@ -1,41 +1,31 @@
-/************************************************************************************
- *arch/cskyv1/src/cskyv1/up_cache.c
- *
- * Copyright (C) 2015 The YunOS Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ************************************************************************************/
-
 #include "cache.h"
 
 /****************************************************************************
  * Pre-processor Macros
  ****************************************************************************/
 
-#define dis_icache(tmp) \
+__attribute__((naked)) static inline void dis_icache(void)
+{
+    int tmp = 0;
+
     __asm__ __volatile__( \
         "mfcr %0, cr18\n\t" \
         "bclri %0, 2\n\t" \
         "mtcr %0, cr18\n\t" \
-        ::"r"(tmp))
+        :"=r"(tmp));
+}
 
-#define en_icache(tmp) \
+__attribute__((naked)) static inline void en_icache(void)
+{
+    int tmp = 0;
+
     __asm__ __volatile__( \
         "mfcr %0, cr18\n\t" \
         "bseti %0, 2\n\t" \
         "mtcr %0, cr18\n\t" \
-        ::"r"(tmp))
+        :"=r" (tmp));
+}
+
 
 #define set_cr17(value) \
     __asm__ __volatile__( \
@@ -54,7 +44,7 @@ static inline void irqrestore(unsigned long flags)
 {
     asm volatile(
         "mtcr    %0, psr  \n"
-        : :"r" (flags) :"memory" );
+        : :"r" (flags) );
 }
 
 static inline unsigned long irqsave(void)
@@ -63,7 +53,7 @@ static inline unsigned long irqsave(void)
     asm volatile(
         "mfcr   %0, psr  \n"
         "psrclr ie      \n"
-        :"=r"(flags) : :"memory" );
+        :"=r"(flags));
     return flags;
 }
 
@@ -88,7 +78,6 @@ static inline void __flush_cache_range(
         unsigned long value)
 {
     unsigned long i,flags;
-    unsigned int tmp = 0;
 
     if ((end - start) > 0x1000) {
         if (value | INS_CACHE) {
@@ -103,7 +92,7 @@ static inline void __flush_cache_range(
     flags = irqsave();
 
     if (value & INS_CACHE) {
-        dis_icache(tmp);
+        dis_icache();
     }
 
     for (i = start; i < end; i += L1_CACHE_BYTES) {
@@ -117,7 +106,7 @@ static inline void __flush_cache_range(
     }
 
     if (value & INS_CACHE) {
-        en_icache(tmp);
+        en_icache();
     }
 
     irqrestore(flags);
@@ -141,7 +130,7 @@ static inline void __flush_cache_range(
 
 void flush_cache_all(void)
 {
-    int value = 0x33;
+    int value = INS_CACHE | DATA_CACHE | CACHE_INV | CACHE_CLR;
     __asm__ __volatile__("mtcr %0,cr17\n\t"
                          "sync\n\t"
                          : :"r" (value));
@@ -161,7 +150,7 @@ void flush_cache_all(void)
 
 void flush_icache_all(void)
 {
-    int value = 0x11;
+    int value = INS_CACHE | CACHE_INV;
     __asm__ __volatile__("mtcr %0,cr17\n\t"
                          "sync\n\t"
                          : :"r" (value));
@@ -181,7 +170,7 @@ void flush_icache_all(void)
 
 void flush_dcache_all(void)
 {
-    int value = 0x32;
+    int value = DATA_CACHE | CACHE_INV | CACHE_CLR;
     __asm__ __volatile__("mtcr %0,cr17\n\t"
                          "sync\n\t"
                          : :"r" (value));
@@ -201,7 +190,7 @@ void flush_dcache_all(void)
 
 void clear_dcache_all(void)
 {
-    int value = 0x22;
+    int value = DATA_CACHE | CACHE_CLR;
     __asm__ __volatile__("mtcr %0,cr17\n\t"
                          "sync\n\t"
                          : :"r" (value));

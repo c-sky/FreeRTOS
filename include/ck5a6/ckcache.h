@@ -1,18 +1,3 @@
-/* ****************************************************************************
- *                                                                          *
- * C-Sky Microsystems Confidential                                          *
- * -------------------------------                                          *
- * This file and all its contents are properties of C-Sky Microsystems. The *
- * information contained herein is confidential and proprietary and is not  *
- * to be disclosed outside of C-Sky Microsystems except under a             *
- * Non-Disclosured Agreement (NDA).                                         *
- *                                                                          *
- ****************************************************************************
- FILE_NAME           : ckcache.h
- AUTHOR              : lin lin
- MODIFIED BY         : xialf
- FUNCTION            : the file is icache init operation for csky cpu:
- ******************************************************************************/
 #ifndef _CKCACHE_H_
 #define _CKCACHE_H_
 

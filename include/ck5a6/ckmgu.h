@@ -1,18 +1,3 @@
-/* ****************************************************************************
- *                                                                          * 
- * C-Sky Microsystems Confidential                                          *
- * -------------------------------                                          *
- * This file and all its contents are properties of C-Sky Microsystems. The * 
- * information contained herein is confidential and proprietary and is not  *
- * to be disclosed outside of C-Sky Microsystems except under a             *
- * Non-Disclosured Agreement (NDA).                                         *
- *                                                                          *
- ****************************************************************************
- FILE_NAME           : csky_mgu.h
- AUTHOR              : lin lin
- MODIFY              : xialf   2015.08.3
- FUNCTION            : the file is about set mgu of csky cpu
- ******************************************************************************/
 #ifndef _MGU_H_
 #define _MGU_H_
 
@@ -61,7 +46,7 @@
         or      r7, r6
         or      r7, r4
         mtcr    r7, cr19
-        
+
         /* set region */
         movi    r5, \region
         mtcr    r5, cr21
@@ -71,7 +56,7 @@
         or      r7, r5
         mtcr    r7, cr20
 
-.endm 
+.endm
 
 .macro  csky_mgu_enable
         /* MGU enable */
