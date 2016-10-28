@@ -1,17 +1,17 @@
-BUILDDIR= ../build
+BUILDDIR= ../../build
 SRC=  $(CASE_NAME).c main.c
 OBJ= $(SRC:.c=.o)
 TAR= user.a
 
-INC_DIR	= ../include
-INC1_DIR = ../freertosv8.2.3/FreeRTOS
+INC_DIR	= ../../include
+INC1_DIR = ../../freertosv8.2.3/FreeRTOS
 
 CFLAGS += -I$(INC_DIR) \
 		  -I$(INC_DIR)/csky \
 		  -I$(INC_DIR)/lib \
 		  -I$(INC_DIR)/$(SOC) \
 		  -I$(INC1_DIR)/Source/include \
-		  -I$(INC1_DIR)/Source/portable/GCC/CK610
+		  -I$(INC1_DIR)/Source/portable/GCC/$(TARGET_CPU)
 
 
 all: $(TAR)

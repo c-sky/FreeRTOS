@@ -1,8 +1,8 @@
-BUILDDIR= ../build
+BUILDDIR= ../../build
 SRC= $(wildcard *.S)
 OBJ= $(SRC:.S=.o)
 TAR = startup.a
-INC_DIR	= ../include
+INC_DIR	= ../../include
 
 CFLAGS += 	-I$(INC_DIR) \
 			-I$(INC_DIR)/$(SOC) \

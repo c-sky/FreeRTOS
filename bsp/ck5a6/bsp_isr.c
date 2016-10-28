@@ -12,13 +12,13 @@ uint8_t g_shellidx = 0;
  ****************************************************************************/
 /****************************************************************************
  * Description
- * 			Timer 1 interrupt routine
+ *          Timer 1 interrupt routine
  * Function
- * 			void CKTimer1Handler (void)
+ *          void CKTimer1Handler (void)
  * Parameter
- * 			None
+ *          None
  * Return
- * 			None
+ *          None
  ****************************************************************************/
 void CKTimer1Handler(void)
 {
@@ -27,13 +27,13 @@ void CKTimer1Handler(void)
 
 /****************************************************************************
  * Description
- * 			Uart 1 handler
+ *          Uart 1 handler
  * Function
- * 			void CKUart1Handler (void)
+ *          void CKUart1Handler (void)
  * Parameter
- * 			None
+ *          None
  * Return
- * 			None
+ *          None
  ****************************************************************************/
 void CKUart1Handler(void)
 {
@@ -85,13 +85,13 @@ void CKUart1Handler(void)
 
 /****************************************************************************
  * Description
- * 			Timer 1 ISR
+ *          Timer 1 ISR
  * Function
- * 			void CKTimer1Isr (void)
+ *          void CKTimer1Isr (void)
  * Parameter
- * 			None
+ *          None
  * Return
- * 			None
+ *          None
  ****************************************************************************/
 __attribute__((naked)) void CKTimer1Isr(void)
 {
@@ -128,13 +128,13 @@ __attribute__((naked)) void CKTimer1Isr(void)
 
 /****************************************************************************
  * Description
- * 			UART 1 ISR
+ *          UART 1 ISR
  * Function
- * 			void CKUart1Isr (void)
+ *          void CKUart1Isr (void)
  * Parameter
- * 			None
+ *          None
  * Return
- * 			None
+ *          None
  ****************************************************************************/
 __attribute__((naked)) void CKUart1Isr(void)
 {
@@ -172,13 +172,13 @@ __attribute__((naked)) void CKUart1Isr(void)
 
 /****************************************************************************
  * Description
- * 			Trap 0 ISR
+ *          Trap 0 ISR
  * Function
- * 			void CKPendSVIsr (void)
+ *          void CKPendSVIsr (void)
  * Parameter
- * 			None
+ *          None
  * Return
- * 			None
+ *          None
  ****************************************************************************/
 __attribute__((naked)) void CKPendSVIsr(void)
 {
