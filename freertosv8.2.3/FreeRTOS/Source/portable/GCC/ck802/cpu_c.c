@@ -2,8 +2,6 @@
  *  Copyright (C) 2016 YunOS Project. All rights reserved.
  */
 
-#include <k_api.h>
-
 void *yunos_task_stack_init(cpu_stack_t *stack_base, size_t stack_size, void *arg, task_entry_t entry)
 {
     cpu_stack_t *stk;
